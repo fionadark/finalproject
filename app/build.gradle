@@ -11,6 +11,12 @@ plugins {
     id 'application'
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'augur.Tarot'
+    }
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -32,10 +38,15 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'demo.Tarot'
+    mainClass = 'augur.Tarot'
+}
+
+run {
+    standardInput = System.in
 }
 
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
