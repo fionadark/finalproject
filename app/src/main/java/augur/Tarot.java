@@ -67,11 +67,8 @@ public class Tarot implements Callable<String> {
         return names;
     }
 
-<<<<<<< HEAD
-    // for each name_short in curNames, write the corresponding html tag to
-    // index.html
-=======
-    // function will return true if a card should be reversed, false if it should not
+    // function will return true if a card should be reversed, false if it should
+    // not
     // assuming cards are drawn in reverse position about 30% of the time
     public boolean reverseTrueOrFalse() {
         Random rand = new Random();
@@ -79,17 +76,20 @@ public class Tarot implements Callable<String> {
 
         int chance = rand.nextInt(max - min + 1) + min;
 
-        if(chance < 3) return true;
-        else return false;
+        if (chance < 3)
+            return true;
+        else
+            return false;
     }
 
-    // for each name_short in curNames, write the corresponding html tag to index.html
->>>>>>> 4fcc7425518e6d27e080a7bac5117e718e1736d6
+    // for each name_short in curNames, write the corresponding html tag to
+    // index.html
     public void writeToFile(Spread curSpread, String path, List<String> curNames) {
 
         // truncate exisiting contents of index.html to 0
         File file = new File(path);
-        if(file.exists()) file.delete(); 
+        if (file.exists())
+            file.delete();
 
         // declare String variables and List<String> to write to index.html
         String style = "<style> body { background-color:pink; } table { width:55%; border:0; margin: auto; background-color:white; border-spacing:25px; } </style>";
@@ -108,25 +108,11 @@ public class Tarot implements Callable<String> {
             // check if this card should be reversed
             boolean reversed = reverseTrueOrFalse();
 
-<<<<<<< HEAD
-            // the position value of the card depends on the type of spread (# of cards)
-            if (curSpread.nhits == 1)
-                row += " <td>" + position[2] + "</td>";
-            else if (curSpread.nhits == 3 || curSpread.nhits == 10)
-                row += " <td>" + position[i] + "</td>";
-            else
-                row += " <td>The Future </td>";
-
-            // set the meaning value of the row and save to rows
-            row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: "
-                    + curSpread.cards.get(i).meaning_up + "</td>";
-            row += " </tr>\n";
-            rows.add(row);
-=======
             // convert image to base64 and insert it as the image for the row
             try {
                 // get path to correct image
-                String newimgname = System.getProperty("user.dir") + "/src/main/resources/images/" + curSpread.cards.get(i).name_short + ".jpg";
+                String newimgname = System.getProperty("user.dir") + "/src/main/resources/images/"
+                        + curSpread.cards.get(i).name_short + ".jpg";
 
                 // convert the image to base64
                 byte[] imgAsBytes = Files.readAllBytes(Paths.get(newimgname));
@@ -134,33 +120,40 @@ public class Tarot implements Callable<String> {
 
                 // set the image value of the row using the base64 String
                 // if the card is reversed, alter img tag to flip the image 180 degrees
-                if(reversed) {
-                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>";
+                if (reversed) {
+                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString
+                            + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>";
                 } else {
-                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto;\"> </td>";
+                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString
+                            + "\" style=\"width:150px; height:auto;\"> </td>";
                 }
 
                 // the position value of the card depends on the type of spread (# of cards)
-                if(curSpread.nhits == 1) row += " <td>" + position[2] + "</td>";
-                else if(curSpread.nhits == 3 || curSpread.nhits == 10) row += " <td>" + position[i] + "</td>";
-                else row += " <td>The Future </td>";
+                if (curSpread.nhits == 1)
+                    row += " <td>" + position[2] + "</td>";
+                else if (curSpread.nhits == 3 || curSpread.nhits == 10)
+                    row += " <td>" + position[i] + "</td>";
+                else
+                    row += " <td>The Future </td>";
 
                 // set the meaning value of the row and save to rows
                 // if the card is upright use meaning_up, if it is reversed use meaning_rev
-                if(reversed) {
-                    row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card reversed represents: " + curSpread.cards.get(i).meaning_rev + "</td>";
+                if (reversed) {
+                    row += " <td><strong>" + curSpread.cards.get(i).name
+                            + "</strong><br><br>This card reversed represents: " + curSpread.cards.get(i).meaning_rev
+                            + "</td>";
                 } else {
-                    row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: " + curSpread.cards.get(i).meaning_up + "</td>";
+                    row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: "
+                            + curSpread.cards.get(i).meaning_up + "</td>";
                 }
 
                 row += " </tr>\n";
                 rows.add(row);
 
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
->>>>>>> 4fcc7425518e6d27e080a7bac5117e718e1736d6
         }
 
         // write to index.html
@@ -298,14 +291,7 @@ public class Tarot implements Callable<String> {
                 scanner.close();
 
                 // get url of index.html and make sure it exists
-<<<<<<< HEAD
-                URL indexURL = getClass().getResource("index.html");
-                assert indexURL != null;
-                // File f = new File(indexURL.toURI());
-                File x = new File("/Users/dark/app/src/main/resources/index.html");
-=======
                 File f = new File(System.getProperty("user.home") + "/index.html");
->>>>>>> 4fcc7425518e6d27e080a7bac5117e718e1736d6
 
                 // make sure f exists before continuing
                 // if(!f.exists()) System.out.println("index.html does not exist");
