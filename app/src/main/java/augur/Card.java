@@ -1,4 +1,4 @@
-package demo;
+package augur;
 
 public class Card {
     public String name;

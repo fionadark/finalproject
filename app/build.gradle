@@ -6,17 +6,29 @@
  * User Manual available at https://docs.gradle.org/8.0.2/userguide/building_java_projects.html
  */
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'application'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
+  id 'java'
+  id 'application'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'augur.Tarot'
+    }
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
+    //classpath "gradle.plugin.com.github.johnrengelman:shadow:8.1.1"
+
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 
@@ -32,6 +44,13 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass = 'augur.Tarot'
+<<<<<<< HEAD
+=======
+}
+
+run {
+    standardInput = System.in
+>>>>>>> 4fcc7425518e6d27e080a7bac5117e718e1736d6
 }
 
 tasks.named('test') {
@@ -39,6 +58,9 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+<<<<<<< HEAD
 run {
     standardInput = System.in
 }
+=======
+>>>>>>> 4fcc7425518e6d27e080a7bac5117e718e1736d6

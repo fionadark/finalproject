@@ -1,4 +1,4 @@
-package demo;
+package augur;
 import java.util.List;
 
 public class Spread {
