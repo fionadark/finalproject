@@ -1,4 +1,4 @@
-package demo;
+package augur;
 
 import java.io.File;
 import java.io.IOException;
@@ -245,7 +245,7 @@ public class Tarot implements Callable<String> {
                 URL indexURL = getClass().getResource("index.html");
                 assert indexURL != null;
                 // File f = new File(indexURL.toURI());
-                File x = new File("/Users/dark/demo/app/src/main/resources/index.html");
+                File x = new File("/Users/dark/app/src/main/resources/index.html");
 
                 // make sure f exists before continuing
                 // if(!f.exists()) System.out.println("index.html does not exist");

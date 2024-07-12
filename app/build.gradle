@@ -31,7 +31,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'demo.Tarot'
+    mainClass = 'augur.Tarot'
 }
 
 tasks.named('test') {
