@@ -10,7 +10,7 @@ Augur is a command line interface that allows the user to divine their future us
 * Users can request another reading as many times as necessary to divine their future.
 
 ### Example three-card draw:
-![alt text](https://github.com/fionadark/augur/app/src/main/resources/images/AugurScreenshot.png)
+![alt text](augur/app/src/main/resources/images/AugurScreenshot.png)
 
 ### Quick start:
 * ???
