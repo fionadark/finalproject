@@ -2,21 +2,9 @@ package augur;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Random;
+import java.net.*;
+import java.nio.file.*;
+import java.util.*;
 import java.util.concurrent.Callable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,12 +13,12 @@ import picocli.CommandLine.Option;
 
 import java.awt.Desktop;
 
-@Command(name = "tarot", mixinStandardHelpOptions = true, version = "tarot 1.0", description = "divines the future")
+@Command(name = "tarot", mixinStandardHelpOptions = true, version = "augur 1.0", description = "divines the future")
 
 public class Tarot implements Callable<String>{
 
     // global scanner for all user input
-    public static Scanner scan = new Scanner(System.in);
+    public static final Scanner SCANNER = new Scanner(System.in);
 
     @Option(names = {"-t", "--tarot"}, description = "divines the future")
 
@@ -40,7 +28,7 @@ public class Tarot implements Callable<String>{
         String answer;
 
         System.out.print("Would you like another reading? Enter Y/N: ");
-        if(scan.hasNextLine()) answer = scan.nextLine();
+        if(SCANNER.hasNextLine()) answer = SCANNER.nextLine();
         else answer = "N"; // rather than throw an error
 
         // to start another reading, call .call() on a new instance of Tarot
@@ -54,17 +42,6 @@ public class Tarot implements Callable<String>{
 
     }
 
-    // method that will return a List of type String containing the name_short vars for each Card in a given Spread
-    public List<String> getShortNames(Spread curSpread) {
-        List<String> names = new ArrayList<String>();
-
-        for(int i = 0; i < curSpread.nhits; i++) {
-            names.add(curSpread.cards.get(i).name_short);
-        }
-
-        return names;
-    }
-
     // function will return true if a card should be reversed, false if it should not
     // assuming cards are drawn in reverse position about 30% of the time
     public boolean reverseTrueOrFalse() {
@@ -73,8 +50,54 @@ public class Tarot implements Callable<String>{
 
         int chance = rand.nextInt(max - min + 1) + min;
 
-        if(chance < 3) return true;
-        else return false;
+        return chance < 3;
+    }
+
+    public String getEncodedImgString(String imgName) {
+        String img = System.getProperty("user.dir") + "/src/main/resources/images/" + imgName + ".jpg";
+        String encodedImgString = "";
+  
+        try {
+            // encode image in base 64
+            byte[] imgAsBytes = Files.readAllBytes(Paths.get(img));
+            encodedImgString = Base64.getEncoder().encodeToString(imgAsBytes);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return encodedImgString;
+    }
+
+    public String getImgHTMLTag(boolean reversed, String img) {
+        String tag = "";
+
+        // if the card is reversed, alter img tag to flip the image 180 degrees
+        if(reversed) tag = " <td> <img src=\"data:image/jpg;base64," + img + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>";
+        else tag = " <td> <img src=\"data:image/jpg;base64," + img + "\" style=\"width:150px; height:auto;\"> </td>";
+
+        return tag;
+    }
+
+    public String getCardMeaning(boolean reversed, String cardName, String up_meaning, String rev_meaning) {
+        String meaning = "";
+
+        // use correct meaning for if card is reversed or upright
+        if(reversed) meaning = " <td><strong>" + cardName + "</strong><br><br>This card reversed represents: " + rev_meaning + "</td>";
+        else meaning = " <td><strong>" + cardName + "</strong><br><br>This card represents: " + up_meaning + "</td>";
+
+        return meaning;
+    }
+
+    public String getCardPos(int numCards, int pos) {
+        String[] positions = {"Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious", "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears", "The Outcome"};
+        String cardPos = "";
+
+        // set cardPos value depending on meaning of card's position in the spread
+        if(numCards == 1) cardPos = " <td>" + positions[2] + "</td>";
+        else if(numCards == 3 || numCards == 10) cardPos = " <td>" + positions[pos] + "</td>";
+        else cardPos = " <td>The Future </td>";
+
+        return cardPos;
     }
 
     // for each name_short in curNames, write the corresponding html tag to index.html
@@ -84,52 +107,34 @@ public class Tarot implements Callable<String>{
         File file = new File(path);
         if(file.exists()) file.delete(); 
 
-        // declare position and strBuilder
-        String[] position = {"Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious", "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears", "The Outcome"};
+        // declare strBuilder that will hold values for rows of html table
         StringBuilder strBuilder = new StringBuilder();
 
         // save each row of the table to strBuilder
         for(int i = 0; i < curSpread.nhits; i++) {
+            // open new row
             strBuilder.append("<tr>");
 
             // check if this card should be reversed
             boolean reversed = reverseTrueOrFalse();
 
-            // convert image to base64 and insert it as the image for the row
-            try {
-                // get path to correct image
-                String newimgname = System.getProperty("user.dir") + "/src/main/resources/images/" + curSpread.cards.get(i).name_short + ".jpg";
+            // get base 64 encoded path to tarot card image
+            String encodedImgString = getEncodedImgString(curSpread.cards.get(i).name_short);
 
-                // convert the image to base64
-                byte[] imgAsBytes = Files.readAllBytes(Paths.get(newimgname));
-                String imgAsBytesString = Base64.getEncoder().encodeToString(imgAsBytes);
+            // append value for "Your Cards" column of table to strBuilder
+            String imgHTMLTag = getImgHTMLTag(reversed, encodedImgString);
+            strBuilder.append(imgHTMLTag);
 
-                // set the image value of the row using the base64 String
-                // if the card is reversed, alter img tag to flip the image 180 degrees
-                if(reversed) {
-                    strBuilder.append(" <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>");
-                } else {
-                    strBuilder.append(" <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto;\"> </td>");
-                }
+            // append value for "Position" column of table to strBuilder
+            String cardPos = getCardPos(curSpread.nhits, i);
+            strBuilder.append(cardPos);
 
-                // the position value of the card depends on the type of spread (# of cards)
-                if(curSpread.nhits == 1) strBuilder.append(" <td>" + position[2] + "</td>");
-                else if(curSpread.nhits == 3 || curSpread.nhits == 10) strBuilder.append(" <td>" + position[i] + "</td>");
-                else strBuilder.append(" <td>The Future </td>");
+            // append value for "Meaning" column of table to strBuilder
+            String cardMeaning = getCardMeaning(reversed, curSpread.cards.get(i).name, curSpread.cards.get(i).meaning_up, curSpread.cards.get(i).meaning_rev);
+            strBuilder.append(cardMeaning);
 
-                // set the meaning value of the row and save to strBuilder
-                // if the card is upright use meaning_up, if it is reversed use meaning_rev
-                if(reversed) {
-                    strBuilder.append(" <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card reversed represents: " + curSpread.cards.get(i).meaning_rev + "</td>");
-                } else {
-                    strBuilder.append(" <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: " + curSpread.cards.get(i).meaning_up + "</td>");
-                }
-
-                strBuilder.append(" </tr>\n");
-
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
+            // close row
+            strBuilder.append(" </tr>\n");
 
         }
 
@@ -221,7 +226,7 @@ public class Tarot implements Callable<String>{
         System.out.println("3) The Celtic Cross \nA complex reading representing the many aspects of your life. Peer into your future, if you dare...\n");
         System.out.print("Enter the # of your choice: ");
 
-        userChoice = scan.nextLine();
+        userChoice = SCANNER.nextLine();
 
         if(userChoice.contains("1")) URLString += "1";
         else if(userChoice.contains("2")) URLString += "3";
@@ -265,14 +270,11 @@ public class Tarot implements Callable<String>{
                 // get url of index.html and make sure it exists
                 File f = new File(System.getProperty("user.home") + "/index.html");
 
-                // make sure f exists before continuing
-                //if(!f.exists()) System.out.println("index.html does not exist");
-
                 // get absolute path of file
                 String path = f.getAbsolutePath();
 
                 // get list of the short_names of currentSpread
-                List<String> currentNames = getShortNames(currentSpread);
+                List<String> currentNames = currentSpread.getShortNames();
 
                 // write html tag into index.html for each card in currentNames/currentSpread
                 writeToFile(currentSpread, path, currentNames);
@@ -292,7 +294,7 @@ public class Tarot implements Callable<String>{
     }
 
     public static void main(String[] args) {
-        Tarot check = new Tarot();
-        check.call();        
+        Tarot tarotReading = new Tarot();
+        tarotReading.call();        
     }
 }
