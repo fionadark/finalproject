@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
@@ -83,17 +84,13 @@ public class Tarot implements Callable<String>{
         File file = new File(path);
         if(file.exists()) file.delete(); 
 
-        // declare String variables and List<String> to write to index.html
-        String style = "<style> body { background-color:pink; } table { width:55%; border:0; margin: auto; background-color:white; border-spacing:25px; } </style>";
-        String title = "<h1 style=\"color:white; text-align:center; padding-top:25px; padding-bottom:25px;\">Your future awaits...</h1>";
-        String table = "<table> <tr> <th>Your Cards</th> <th>Position</th> <th>Meaning</th> </tr>";
-        String closeTable = "</table>";
-        List<String> rows = new ArrayList<String>();
+        // declare position and strBuilder
         String[] position = {"Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious", "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears", "The Outcome"};
+        StringBuilder strBuilder = new StringBuilder();
 
-        // save each row of the table to rows List<String>
+        // save each row of the table to strBuilder
         for(int i = 0; i < curSpread.nhits; i++) {
-            String row = "<tr>";
+            strBuilder.append("<tr>");
 
             // check if this card should be reversed
             boolean reversed = reverseTrueOrFalse();
@@ -110,26 +107,25 @@ public class Tarot implements Callable<String>{
                 // set the image value of the row using the base64 String
                 // if the card is reversed, alter img tag to flip the image 180 degrees
                 if(reversed) {
-                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>";
+                    strBuilder.append(" <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>");
                 } else {
-                    row += " <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto;\"> </td>";
+                    strBuilder.append(" <td> <img src=\"data:image/jpg;base64," + imgAsBytesString + "\" style=\"width:150px; height:auto;\"> </td>");
                 }
 
                 // the position value of the card depends on the type of spread (# of cards)
-                if(curSpread.nhits == 1) row += " <td>" + position[2] + "</td>";
-                else if(curSpread.nhits == 3 || curSpread.nhits == 10) row += " <td>" + position[i] + "</td>";
-                else row += " <td>The Future </td>";
+                if(curSpread.nhits == 1) strBuilder.append(" <td>" + position[2] + "</td>");
+                else if(curSpread.nhits == 3 || curSpread.nhits == 10) strBuilder.append(" <td>" + position[i] + "</td>");
+                else strBuilder.append(" <td>The Future </td>");
 
-                // set the meaning value of the row and save to rows
+                // set the meaning value of the row and save to strBuilder
                 // if the card is upright use meaning_up, if it is reversed use meaning_rev
                 if(reversed) {
-                    row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card reversed represents: " + curSpread.cards.get(i).meaning_rev + "</td>";
+                    strBuilder.append(" <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card reversed represents: " + curSpread.cards.get(i).meaning_rev + "</td>");
                 } else {
-                    row += " <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: " + curSpread.cards.get(i).meaning_up + "</td>";
+                    strBuilder.append(" <td><strong>" + curSpread.cards.get(i).name + "</strong><br><br>This card represents: " + curSpread.cards.get(i).meaning_up + "</td>");
                 }
 
-                row += " </tr>\n";
-                rows.add(row);
+                strBuilder.append(" </tr>\n");
 
             } catch(IOException e) {
                 e.printStackTrace();
@@ -137,21 +133,33 @@ public class Tarot implements Callable<String>{
 
         }
 
+        // insert strBuilder into html code that will be written to index.html
+        String output = """
+                <html>
+                    <head>
+                        <style>
+                            h1 { color:white; text-align:center; padding-top:25px; padding-bottom:25px; }
+                            body { background-color:pink; }
+                            table { width:55%%; border:0; margin: auto; background-color:white; border-spacing:25px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Your future awaits...</h1>
+                        <table>
+                            <tr>
+                                <th>Your Cards</th>
+                                <th>Position</th>
+                                <th>Meaning</th>
+                            </tr>
+                            %s
+                        </table>
+                    </body>
+                </html>
+                """.formatted(strBuilder.toString());
+        
         // write to index.html
         try {
-            // begin table
-            Files.write(Paths.get(path), style.getBytes(), StandardOpenOption.CREATE);
-            Files.write(Paths.get(path), title.getBytes(), StandardOpenOption.APPEND);
-            Files.write(Paths.get(path), table.getBytes(), StandardOpenOption.APPEND);
-
-            // write rows to table
-            for(String x: rows) {
-                Files.write(Paths.get(path), x.getBytes(), StandardOpenOption.APPEND);
-            }
-
-            // close table
-            Files.write(Paths.get(path), closeTable.getBytes(), StandardOpenOption.APPEND);
-
+            Files.write(Paths.get(path), output.getBytes(), StandardOpenOption.CREATE);
         } catch(IOException e) {
             e.printStackTrace();
         }
