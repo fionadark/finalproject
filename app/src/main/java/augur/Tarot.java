@@ -32,12 +32,15 @@ public class Tarot implements Callable<String>{
         else answer = "N"; // rather than throw an error
 
         // to start another reading, call .call() on a new instance of Tarot
-        if(answer.contains("Y")) {
+        if(answer.equals("Y") || answer.equals("Yes")) {
             Tarot t = new Tarot();
             t.call();
-        // end program if the user does not want another reading
-        } else {
+        // end program if user chooses no
+        } else if (answer.equals("N") || answer.equals("No")) {
             System.out.println("\nOkay, goodbye!\n");
+        // throw an exception for weird input
+        } else {
+            throw new IllegalArgumentException("That wasn't an option, sorry!");
         }
 
     }
@@ -71,6 +74,9 @@ public class Tarot implements Callable<String>{
     public String getImgHTMLTag(boolean reversed, String img) {
         String tag = "";
 
+        // check for invalid arguments
+        if(img == null) throw new IllegalArgumentException("null argument");
+
         // if the card is reversed, alter img tag to flip the image 180 degrees
         if(reversed) tag = " <td> <img src=\"data:image/jpg;base64," + img + "\" style=\"width:150px; height:auto; transform: rotate(180deg);\"> </td>";
         else tag = " <td> <img src=\"data:image/jpg;base64," + img + "\" style=\"width:150px; height:auto;\"> </td>";
@@ -80,6 +86,11 @@ public class Tarot implements Callable<String>{
 
     public String getCardMeaning(boolean reversed, String cardName, String up_meaning, String rev_meaning) {
         String meaning = "";
+
+        // check for invalid arguments
+        if(cardName == null || up_meaning == null || rev_meaning == null) {
+            throw new IllegalArgumentException("null argument");
+        }
 
         // use correct meaning for if card is reversed or upright
         if(reversed) meaning = " <td><strong>" + cardName + "</strong><br><br>This card reversed represents: " + rev_meaning + "</td>";
@@ -91,6 +102,11 @@ public class Tarot implements Callable<String>{
     public String getCardPos(int numCards, int pos) {
         String[] positions = {"Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious", "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears", "The Outcome"};
         String cardPos = "";
+
+        // check for invalid arguments
+        if(numCards < 1 || numCards > 10 || pos < 0 || pos > 9) {
+            throw new IllegalArgumentException("invalid argument");
+        }
 
         // set cardPos value depending on meaning of card's position in the spread
         if(numCards == 1) cardPos = " <td>" + positions[2] + "</td>";
@@ -208,6 +224,7 @@ public class Tarot implements Callable<String>{
         // if the user has entered another answer
         else {
             System.out.println("No cards present themselves to you. Your future remains murky!\n");
+            throw new IllegalArgumentException("invalid user input");
         }
 
     }
