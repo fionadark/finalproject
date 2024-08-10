@@ -22,8 +22,7 @@ public class Tarot implements Callable<String>{
 
     @Option(names = {"-t", "--tarot"}, description = "divines the future")
 
-    // method to ask a user if they want to perform another reading
-    // if yes, begins another reading by calling .call() on a new instance of Tarot
+    // method to ask a user if they want to perform another reading, begin one if yes/ end program if no
     public void beginNewReading() {
         String answer;
 

@@ -68,4 +68,10 @@ public class TarotTest {
         assertThrows(IllegalArgumentException.class, () -> test.getCardPos(3, -1));
     }
 
+    @Test
+    public void test_getCardPos_2invalidArgs() {
+        Tarot test = new Tarot();
+        assertThrows(IllegalArgumentException.class, () -> test.getCardPos(15, -1));
+    }
+
 }
