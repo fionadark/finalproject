@@ -12,7 +12,7 @@ public class SpreadTest {
         Spread spread = new Spread();
         List<String> results = spread.getShortNames();
 
-        //assertThat(results).isEqualTo();
+        // in progress
     }
     
 }
