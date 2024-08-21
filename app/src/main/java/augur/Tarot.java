@@ -55,12 +55,13 @@ public class Tarot implements Callable<String>{
         return chance < 3;
     }
 
+    // function will encode given image in base 64 and return result as a String
     public String getEncodedImgString(String imgName) {
         String img = System.getProperty("user.dir") + "/src/main/resources/images/" + imgName + ".jpg";
         String encodedImgString = "";
   
+        // encode image in base 64
         try {
-            // encode image in base 64
             byte[] imgAsBytes = Files.readAllBytes(Paths.get(img));
             encodedImgString = Base64.getEncoder().encodeToString(imgAsBytes);
         } catch(IOException e) {
@@ -70,6 +71,8 @@ public class Tarot implements Callable<String>{
         return encodedImgString;
     }
 
+    // function will return a String with the given image's html tag
+    // if the card is reversed, img tag will include transform: rotate(180deg) to show the image reversed
     public String getImgHTMLTag(boolean reversed, String img) {
         String tag = "";
 
@@ -83,6 +86,8 @@ public class Tarot implements Callable<String>{
         return tag;
     }
 
+    // function will return a String with the meaning of the given card in a html <td> tag to enter into the table
+    // if the image is reversed, meaning_rev will be used instead of meaning_up
     public String getCardMeaning(boolean reversed, String cardName, String up_meaning, String rev_meaning) {
         String meaning = "";
 
@@ -98,6 +103,7 @@ public class Tarot implements Callable<String>{
         return meaning;
     }
 
+    // function will return a String with the position of the card in the spread
     public String getCardPos(int numCards, int pos) {
         String[] positions = {"Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious", "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears", "The Outcome"};
         String cardPos = "";
