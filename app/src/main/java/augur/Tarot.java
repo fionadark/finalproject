@@ -242,7 +242,7 @@ public class Tarot implements Callable<String>{
         // ask user for type of spread and set number of cards
         String userChoice;
 
-        System.out.println("Which kind of reading would you like?\n");
+        System.out.println("Which kind of tarot reading would you like?\n");
         System.out.println("1) The One-Card Spread \nPerfect if you have a specific question you want answered!\n");
         System.out.println("2) The Three-Card Spread \nA simple but insightful reading of your past, present, and future.\n");
         System.out.println("3) The Celtic Cross \nA complex reading representing the many aspects of your life. Peer into your future, if you dare...\n");
