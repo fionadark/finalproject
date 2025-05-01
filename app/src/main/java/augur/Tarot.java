@@ -52,12 +52,12 @@ public class Tarot implements Callable<String>{
 
         int chance = rand.nextInt(max - min + 1) + min;
 
-        return chance < 3;
+        return chance <= 3;
     }
-
+    
     // function will encode given image in base 64 and return result as a String
     public String getEncodedImgString(String imgName) {
-        String img = System.getProperty("user.dir") + "/src/main/resources/images/" + imgName + ".jpg";
+        String img = System.getProperty("user.dir") + "/app/src/main/resources/images/" + imgName + ".jpg";
         String encodedImgString = "";
   
         // encode image in base 64
