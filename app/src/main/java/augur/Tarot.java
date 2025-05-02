@@ -152,7 +152,7 @@ public class Tarot implements Callable<String> {
         StringBuilder strBuilder = new StringBuilder();
 
         // save each row of the table to strBuilder
-        for (int i = 0; i < curSpread.nhits; i++) {
+        for (int i = 0; i < curSpread.getNHits(); i++) {
             // open new row
             strBuilder.append("<tr>");
 
@@ -160,19 +160,19 @@ public class Tarot implements Callable<String> {
             boolean reversed = reverseTrueOrFalse();
 
             // get base 64 encoded path to tarot card image
-            String encodedImgString = getEncodedImgString(curSpread.cards.get(i).name_short);
+            String encodedImgString = getEncodedImgString(curSpread.getCards().get(i).getNameShort());
 
             // append value for "Your Cards" column of table to strBuilder
             String imgHTMLTag = getImgHTMLTag(reversed, encodedImgString);
             strBuilder.append(imgHTMLTag);
 
             // append value for "Position" column of table to strBuilder
-            String cardPos = getCardPos(curSpread.nhits, i);
+            String cardPos = getCardPos(curSpread.getNHits(), i);
             strBuilder.append(cardPos);
 
             // append value for "Meaning" column of table to strBuilder
-            String cardMeaning = getCardMeaning(reversed, curSpread.cards.get(i).name,
-                    curSpread.cards.get(i).meaning_up, curSpread.cards.get(i).meaning_rev);
+            String cardMeaning = getCardMeaning(reversed, curSpread.getCards().get(i).getName(),
+                    curSpread.getCards().get(i).getMeaningUp(), curSpread.getCards().get(i).getMeaningRev());
             strBuilder.append(cardMeaning);
 
             // close row
@@ -220,42 +220,42 @@ public class Tarot implements Callable<String> {
 
         // if the user has chosen a one-card spread...
         if (userChoice.contains("1")) {
-            System.out.println("The card that presents itself to you is " + curSpread.cards.get(0).name + "\n");
-            System.out.println("This card represents: " + curSpread.cards.get(0).meaning_rev + "\n");
+            System.out.println("The card that presents itself to you is " + curSpread.getCards().get(0).getName() + "\n");
+            System.out.println("This card represents: " + curSpread.getCards().get(0).getMeaningRev() + "\n");
         }
         // if the user has chosen a three-card spread...
-        else if (userChoice.contains("2")) {
+        else if (userChoice.contains("3")) {
             System.out.println("Three cards present themselves to you...\n");
-            System.out.println("Your past: " + curSpread.cards.get(0).name);
-            System.out.println(curSpread.cards.get(0).meaning_rev + "\n");
-            System.out.println("Your present: " + curSpread.cards.get(1).name);
-            System.out.println(curSpread.cards.get(1).meaning_rev + "\n");
-            System.out.println("Your future: " + curSpread.cards.get(2).name);
-            System.out.println(curSpread.cards.get(2).meaning_rev + "\n");
+            System.out.println("Your past: " + curSpread.getCards().get(0).getName());
+            System.out.println(curSpread.getCards().get(0).getMeaningRev() + "\n");
+            System.out.println("Your present: " + curSpread.getCards().get(1).getName());
+            System.out.println(curSpread.getCards().get(1).getMeaningRev() + "\n");
+            System.out.println("Your future: " + curSpread.getCards().get(2).getName());
+            System.out.println(curSpread.getCards().get(2).getMeaningRev() + "\n");
         }
         // if the user has chosen a celtic cross...
-        else if (userChoice.contains("3")) {
+        else if (userChoice.contains("10")) {
             System.out.println("Ten cards present themselves to you...\n");
-            System.out.println("Your present: " + curSpread.cards.get(0).name + "\nThis card represents: "
-                    + curSpread.cards.get(0).meaning_up + "\n");
-            System.out.println("Your current challenge: " + curSpread.cards.get(1).name + "\nThis card represents: "
-                    + curSpread.cards.get(1).meaning_up + "\n");
-            System.out.println("Your past: " + curSpread.cards.get(2).name + "\nThis card represents: "
-                    + curSpread.cards.get(2).meaning_up + "\n");
-            System.out.println("Your future: " + curSpread.cards.get(3).name + "\nThis card represents: "
-                    + curSpread.cards.get(3).meaning_up + "\n");
-            System.out.println("Your conscious: " + curSpread.cards.get(4).name + "\nThis card represents: "
-                    + curSpread.cards.get(4).meaning_up + "\n");
-            System.out.println("Your subconscious: " + curSpread.cards.get(5).name + "\nThis card represents: "
-                    + curSpread.cards.get(5).meaning_up + "\n");
-            System.out.println("The cards' advice: " + curSpread.cards.get(6).name + "\nThis card represents: "
-                    + curSpread.cards.get(6).meaning_up + "\n");
-            System.out.println("Your external influences: " + curSpread.cards.get(7).name + "\nThis card represents: "
-                    + curSpread.cards.get(7).meaning_up + "\n");
-            System.out.println("Your hopes and fears: " + curSpread.cards.get(8).name + "\nThis card represents: "
-                    + curSpread.cards.get(8).meaning_up + "\n");
-            System.out.println("Your outcome: " + curSpread.cards.get(9).name + "\nThis card represents: "
-                    + curSpread.cards.get(9).meaning_up + "\n");
+            System.out.println("Your present: " + curSpread.getCards().get(0).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(0).getMeaningUp() + "\n");
+            System.out.println("Your current challenge: " + curSpread.getCards().get(1).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(1).getMeaningUp() + "\n");
+            System.out.println("Your past: " + curSpread.getCards().get(2).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(2).getMeaningUp() + "\n");
+            System.out.println("Your future: " + curSpread.getCards().get(3).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(3).getMeaningUp() + "\n");
+            System.out.println("Your conscious: " + curSpread.getCards().get(4).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(4).getMeaningUp() + "\n");
+            System.out.println("Your subconscious: " + curSpread.getCards().get(5).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(5).getMeaningUp() + "\n");
+            System.out.println("The cards' advice: " + curSpread.getCards().get(6).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(6).getMeaningUp() + "\n");
+            System.out.println("Your external influences: " + curSpread.getCards().get(7).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(7).getMeaningUp() + "\n");
+            System.out.println("Your hopes and fears: " + curSpread.getCards().get(8).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(8).getMeaningUp() + "\n");
+            System.out.println("Your outcome: " + curSpread.getCards().get(9).getName() + "\nThis card represents: "
+                    + curSpread.getCards().get(9).getMeaningUp() + "\n");
 
         }
         // if the user has entered another answer
@@ -274,7 +274,6 @@ public class Tarot implements Callable<String> {
     public String selectTarotSpread(String URLStarter) {
         String userInput;
         boolean spreadSelected = false;
-        System.out.println("url starter1: " + URLStarter);
 
         System.out.println(
                 "\nTo begin, would you like to choose your own tarot spread or allow Augur to choose one for you?");
@@ -338,7 +337,6 @@ public class Tarot implements Callable<String> {
             throw new IllegalArgumentException("Invalid input.");
         }
 
-        System.out.println("url starter end: " + URLStarter);
         return URLStarter;
     }
 
@@ -357,8 +355,6 @@ public class Tarot implements Callable<String> {
 
         int equalsIndex = URLString.indexOf("=");
         String userChoice = URLString.substring(equalsIndex + 1);
-        System.out.println("url string: " + URLString);
-        System.out.println("user choice: " + userChoice);
         
         // establish connection to API URL
         try {
