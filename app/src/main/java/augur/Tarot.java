@@ -17,13 +17,14 @@ import java.awt.Desktop;
 
 public class Tarot implements Callable<String> {
 
-    // global scanner for all user input
+    // global scanner to handle all user input
     public static final Scanner SCANNER = new Scanner(System.in);
 
     @Option(names = { "-t", "--tarot" }, description = "divines the future")
 
-    // method to ask a user if they want to perform another reading, begin one if
-    // yes/ end program if no
+    // beginNewReading() asks the user if they want to perform another reading
+        // if yes -> create new Tarot object, call()
+        // if no -> end program.
     public void beginNewReading() {
         String answer;
 
@@ -47,9 +48,9 @@ public class Tarot implements Callable<String> {
 
     }
 
-    // function will return true if a card should be reversed, false if it should
-    // not
-    // assuming cards are drawn in reverse position about 30% of the time
+    // reverseTrueOrFalse() determines if a card is drawn in reverse position (this will be true 30% of the time)
+        // if reversed, return true
+        // if not reversed, return false
     public boolean reverseTrueOrFalse() {
         Random rand = new Random();
         int min = 1, max = 10;
@@ -59,7 +60,8 @@ public class Tarot implements Callable<String> {
         return chance <= 3;
     }
 
-    // function will encode given image in base 64 and return result as a String
+    // getEncodedImgString() will encode a given image in base 64
+    // returns encoded img as a String
     public String getEncodedImgString(String imgName) {
         String img = System.getProperty("user.dir") + "/app/src/main/resources/images/" + imgName + ".jpg";
         String encodedImgString = "";
@@ -75,9 +77,8 @@ public class Tarot implements Callable<String> {
         return encodedImgString;
     }
 
-    // function will return a String with the given image's html tag
-    // if the card is reversed, img tag will include transform: rotate(180deg) to
-    // show the image reversed
+    // getImgHTMLTag() creates and returns an HTML tag with the given image string
+    // if the card is reversed, the img tag includes "transform: rotate(160deg)" so image will display upside down
     public String getImgHTMLTag(boolean reversed, String img) {
         String tag = "";
 
@@ -95,28 +96,28 @@ public class Tarot implements Callable<String> {
         return tag;
     }
 
-    // function will return a String with the meaning of the given card in a html
-    // <td> tag to enter into the table
-    // if the image is reversed, meaning_rev will be used instead of meaning_up
-    public String getCardMeaning(boolean reversed, String cardName, String up_meaning, String rev_meaning) {
+    // getCardMeaning() will return a String with the meaning of the given card in a HTML <td> to enter into the display table
+    // if the image is reversed, this function uses the reversed meaning
+    public String getCardMeaning(boolean reversed, String cardName, String uprightMeaning, String reversedMeaning) {
         String meaning = "";
 
         // check for invalid arguments
-        if (cardName == null || up_meaning == null || rev_meaning == null) {
+        if (cardName == null || uprightMeaning == null || reversedMeaning == null) {
             throw new IllegalArgumentException("null argument");
         }
 
         // use correct meaning for if card is reversed or upright
         if (reversed)
-            meaning = " <td><strong>" + cardName + "</strong><br><br>This card reversed represents: " + rev_meaning
+            meaning = " <td><strong>" + cardName + "</strong><br><br>This card reversed represents: " + reversedMeaning
                     + "</td>";
         else
-            meaning = " <td><strong>" + cardName + "</strong><br><br>This card represents: " + up_meaning + "</td>";
+            meaning = " <td><strong>" + cardName + "</strong><br><br>This card represents: " + uprightMeaning + "</td>";
 
         return meaning;
     }
 
-    // function will return a String with the position of the card in the spread
+    // getCardPos() will return a String with the position of the card in the spread
+    // first position represents "Your Past", second position represents "Your Present", etc.
     public String getCardPos(int numCards, int pos) {
         String[] positions = { "Your Past", "Your Present", "Your Future", "Your Current Challenge", "Your Conscious",
                 "Your Subconscious", "The Cards Advice", "Your External Influences", "Your Hopes and Fears",
@@ -125,6 +126,8 @@ public class Tarot implements Callable<String> {
 
         // check for invalid arguments
         if (numCards < 1 || numCards > 10 || pos < 0 || pos > 9) {
+            System.out.println("numCards: " + numCards);
+            System.out.println("pos: " + pos);
             throw new IllegalArgumentException("invalid argument");
         }
 
@@ -139,8 +142,9 @@ public class Tarot implements Callable<String> {
         return cardPos;
     }
 
-    // for each name_short in curNames, write the corresponding html tag to
-    // index.html
+    // writeToFile() creates an HTML tag for each card in a spread to display its meaning, position, and image
+    // each HTML tag is included in a HTML table
+    // the HTML table is written to index.html to display as a web page
     public void writeToFile(Spread curSpread, String path, List<String> curNames) {
 
         // truncate exisiting contents of index.html to 0
@@ -213,18 +217,25 @@ public class Tarot implements Callable<String> {
 
     }
 
-    // method to print various tarot spreads based on user's choice
-    // work in progress... there has to be a more efficient way to do all this
-    // printing
+    // tellFuture() prints each spread to the command line so that the user can see their results even if index.html does not launch
+    // this is ugly... is there a more efficient way to do this?
     public void tellFuture(Spread curSpread, String userChoice) {
 
-        // if the user has chosen a one-card spread...
-        if (userChoice.contains("1")) {
-            System.out.println("The card that presents itself to you is " + curSpread.getCards().get(0).getName() + "\n");
-            System.out.println("This card represents: " + curSpread.getCards().get(0).getMeaningRev() + "\n");
-        }
-        // if the user has chosen a three-card spread...
-        else if (userChoice.contains("3")) {
+        // if the user has chosen the celtic cross...
+        if(userChoice.contains("10")) {
+            System.out.println("Ten cards present themselves to you...\n");
+            System.out.println("Your present: " + curSpread.getCards().get(0).getName() + "\nThis card represents: " + curSpread.getCards().get(0).getMeaningUp() + "\n");
+            System.out.println("Your current challenge: " + curSpread.getCards().get(1).getName() + "\nThis card represents: " + curSpread.getCards().get(1).getMeaningUp() + "\n");
+            System.out.println("Your past: " + curSpread.getCards().get(2).getName() + "\nThis card represents: " + curSpread.getCards().get(2).getMeaningUp() + "\n");
+            System.out.println("Your future: " + curSpread.getCards().get(3).getName() + "\nThis card represents: " + curSpread.getCards().get(3).getMeaningUp() + "\n");
+            System.out.println("Your conscious: " + curSpread.getCards().get(4).getName() + "\nThis card represents: " + curSpread.getCards().get(4).getMeaningUp() + "\n");
+            System.out.println("Your subconscious: " + curSpread.getCards().get(5).getName() + "\nThis card represents: " + curSpread.getCards().get(5).getMeaningUp() + "\n");
+            System.out.println("The cards' advice: " + curSpread.getCards().get(6).getName() + "\nThis card represents: " + curSpread.getCards().get(6).getMeaningUp() + "\n");
+            System.out.println("Your external influences: " + curSpread.getCards().get(7).getName() + "\nThis card represents: " + curSpread.getCards().get(7).getMeaningUp() + "\n");
+            System.out.println("Your hopes and fears: " + curSpread.getCards().get(8).getName() + "\nThis card represents: " + curSpread.getCards().get(8).getMeaningUp() + "\n");
+            System.out.println("Your outcome: " + curSpread.getCards().get(9).getName() + "\nThis card represents: " + curSpread.getCards().get(9).getMeaningUp() + "\n");
+        // if the user has chosen a three-card draw...
+        } else if (userChoice.contains("3")) {
             System.out.println("Three cards present themselves to you...\n");
             System.out.println("Your past: " + curSpread.getCards().get(0).getName());
             System.out.println(curSpread.getCards().get(0).getMeaningRev() + "\n");
@@ -232,49 +243,30 @@ public class Tarot implements Callable<String> {
             System.out.println(curSpread.getCards().get(1).getMeaningRev() + "\n");
             System.out.println("Your future: " + curSpread.getCards().get(2).getName());
             System.out.println(curSpread.getCards().get(2).getMeaningRev() + "\n");
-        }
-        // if the user has chosen a celtic cross...
-        else if (userChoice.contains("10")) {
-            System.out.println("Ten cards present themselves to you...\n");
-            System.out.println("Your present: " + curSpread.getCards().get(0).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(0).getMeaningUp() + "\n");
-            System.out.println("Your current challenge: " + curSpread.getCards().get(1).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(1).getMeaningUp() + "\n");
-            System.out.println("Your past: " + curSpread.getCards().get(2).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(2).getMeaningUp() + "\n");
-            System.out.println("Your future: " + curSpread.getCards().get(3).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(3).getMeaningUp() + "\n");
-            System.out.println("Your conscious: " + curSpread.getCards().get(4).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(4).getMeaningUp() + "\n");
-            System.out.println("Your subconscious: " + curSpread.getCards().get(5).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(5).getMeaningUp() + "\n");
-            System.out.println("The cards' advice: " + curSpread.getCards().get(6).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(6).getMeaningUp() + "\n");
-            System.out.println("Your external influences: " + curSpread.getCards().get(7).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(7).getMeaningUp() + "\n");
-            System.out.println("Your hopes and fears: " + curSpread.getCards().get(8).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(8).getMeaningUp() + "\n");
-            System.out.println("Your outcome: " + curSpread.getCards().get(9).getName() + "\nThis card represents: "
-                    + curSpread.getCards().get(9).getMeaningUp() + "\n");
-
-        }
-        // if the user has entered another answer
-        else {
+        // if the user has chosen a one-card draw...
+        } else if (userChoice.contains("1")) {
+            System.out.println("The card that presents itself to you is " + curSpread.getCards().get(0).getName() + "\n");
+            System.out.println("This card represents: " + curSpread.getCards().get(0).getMeaningRev() + "\n");
+        // if the user has entered something else
+        } else {
             System.out.println("No cards present themselves to you. Your future remains murky!\n");
             throw new IllegalArgumentException("invalid user input");
         }
 
     }
 
-    // method to select which tarot spread to use:
-    //      1) one card spread
-    //      2) three card spread
-    //      3) celtic cross (10 card spread)
-    // method edits the given URL to return the correct # of cards from the tarot api for the selected spread and returns the URL string
+    /* selectTarotSpread() is a method to select which tarot spread to use:
+     *      1) one card spread
+     *      2) three card spread
+     *      3) celtic cross (10 card spread)
+     * this method edits the given URL String to return the correct # of cards from the tarot Api for the chosen Spread
+     * returns the final URL String
+     */
     public String selectTarotSpread(String URLStarter) {
         String userInput;
         boolean spreadSelected = false;
 
+        // ask user if they want to pick their own spread or have augur choose for them
         System.out.println(
                 "\nTo begin, would you like to choose your own tarot spread or allow Augur to choose one for you?");
         System.out.println("1) Choose my own.");
@@ -282,16 +274,16 @@ public class Tarot implements Callable<String> {
         System.out.print("Enter the # of your choice: ");
         userInput = SCANNER.nextLine();
 
-        // option 1: allow user to chooce type of tarot reading
+        // option 1: allow user to choose their own tarot spread
         if (userInput.contains("1")) {
+
             System.out.println("\nExcellent! Select the type of reading you would like, and prepare to look beyond the veil...\n");
             System.out.println("1) The One-Card Spread \nPerfect if you have a specific question you want answered!\n");
-            System.out.println(
-                    "2) The Three-Card Spread \nA simple but insightful reading of your past, present, and future.\n");
-            System.out.println(
-                    "3) The Celtic Cross \nA complex reading representing the many aspects of your life. Peer into your future, if you dare...\n");
+            System.out.println("2) The Three-Card Spread \nA simple but insightful reading of your past, present, and future.\n");
+            System.out.println("3) The Celtic Cross \nA complex reading representing the many aspects of your life. Peer into your future, if you dare...\n");
             System.out.print("Enter the # of your choice: ");
             userInput = SCANNER.nextLine();
+
             if (userInput.contains("1"))
                 URLStarter += "1"; // one card spread
             else if (userInput.contains("2"))
@@ -300,39 +292,46 @@ public class Tarot implements Callable<String> {
                 URLStarter += "10"; // celtic cross (10 card spread)
             else
                 URLStarter += "0";
-        // option 2: provide guiding questions to choose type of tarot reading
+
+        // option 2: provide guiding questions to choose type of tarot spread for the user
         } else if (userInput.contains("2")) {
-            System.out.println(
-                    "\nExcellent! Use your inner eye to choose your answers to a few guiding questions, and Augur can select a tarot spread for you.");
+
+            System.out.println("\nExcellent! Use your inner eye to choose your answers to a few guiding questions, and Augur can select a tarot spread for you.");
             System.out.println("Do you want a simple or complex reading?");
             System.out.println("1) Simple.");
             System.out.println("2) Complex.");
             System.out.print("Enter the # of your choice: ");
             userInput = SCANNER.nextLine();
-            // for a simple reading, give reader the one-card spread
+
+            // for a simple reading, give user the one-card spread
             if (userInput.contains("1") && spreadSelected == false) {
                 URLStarter += "1";
                 spreadSelected = true;
             }
-            System.out.println(
-                    "\nWould you like to focus on how your past connects to your future, or just on your future?");
+
+            System.out.println("\nWould you like to focus on how your past connects to your future, or just on your future?");
             System.out.println("1) The past and present.");
             System.out.println("2) Just the future.");
             System.out.print("Enter the # of your choice: ");
             userInput = SCANNER.nextLine();
-            // for a reading of both past and present, give reader the three-card spread
+
+            // for a reading of both past and present, give user the three-card spread
             if (userInput.contains("1") && spreadSelected == false) {
                 URLStarter += "3";
                 spreadSelected = true;
             }
-            System.out
-                    .println("\nDo you want a general reading, or do you want to focus on one aspect of your future?");
+
+            System.out.println("\nDo you want a general reading, or do you want to focus on one aspect of your future?");
             System.out.println("1) General reading.");
             System.out.println("2) Specific reading.");
             System.out.print("Enter the # of your choice: ");
             userInput = SCANNER.nextLine();
+
             // as default, give reader the celtic cross spread (10 cards)
-            URLStarter += "10";
+            if(spreadSelected == false) {
+                URLStarter += "10";
+            }
+
         } else {
             throw new IllegalArgumentException("Invalid input.");
         }
@@ -340,13 +339,16 @@ public class Tarot implements Callable<String> {
         return URLStarter;
     }
 
+    /* call() executes as Callable on the command line
+     * this method creates a spread, gathers data from the Tarot Api, and launches index.html to display the tarot reading
+     * call() also calls beginNewReading() at the end to see if the user would like another reading
+     */
     @Override
     public String call() {
 
         // welcome message
         System.out.println("\nWelcome to Augur: The Free Tarot Tool!");
-        System.out.println(
-                "This is a command line interfaced designed to provide an authentic tarot card reading experience.");
+        System.out.println("This is a command line interfaced designed to provide an authentic tarot card reading experience.");
 
         // select tarot spread
         String URLStarter = "https://tarotapi.dev/api/v1/cards/random?n=";
@@ -355,8 +357,8 @@ public class Tarot implements Callable<String> {
 
         int equalsIndex = URLString.indexOf("=");
         String userChoice = URLString.substring(equalsIndex + 1);
-        
-        // establish connection to API URL
+
+        // establish connection to Tarot API URL
         try {
             URI u = new URI(URLString);
             URL url = u.toURL();
@@ -367,7 +369,7 @@ public class Tarot implements Callable<String> {
             // check if connection was successful before continuing!
             int responseCode = conn.getResponseCode();
             if (responseCode != 200) {
-                throw new RuntimeException("connection failure");
+                throw new RuntimeException("api connection failure");
             } else {
 
                 String inline = "";
