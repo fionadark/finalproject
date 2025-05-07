@@ -351,7 +351,7 @@ public class Tarot implements Callable<String> {
 
         // welcome message
         System.out.println("\nWelcome to Augur: The Free Tarot Tool!");
-        System.out.println("This is a command line interfaced designed to provide an authentic tarot card reading experience.");
+        System.out.println("This is a command line interface designed to provide an authentic tarot card reading experience.");
 
         // select tarot spread
         String URLStarter = "https://tarotapi.dev/api/v1/cards/random?n=";
