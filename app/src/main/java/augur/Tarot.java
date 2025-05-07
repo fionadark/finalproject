@@ -22,9 +22,10 @@ public class Tarot implements Callable<String> {
 
     @Option(names = { "-t", "--tarot" }, description = "divines the future")
 
-    // beginNewReading() asks the user if they want to perform another reading
-        // if yes -> create new Tarot object, call()
-        // if no -> end program.
+    /* beginNewReading() asks the user if they want to perform another reading
+     * if yes -> create new Tarot object and call call()
+     * if no -> end program
+     */
     public void beginNewReading() {
         String answer;
 
@@ -48,9 +49,10 @@ public class Tarot implements Callable<String> {
 
     }
 
-    // reverseTrueOrFalse() determines if a card is drawn in reverse position (this will be true 30% of the time)
-        // if reversed, return true
-        // if not reversed, return false
+    /* reverseTrueOrFalse() determines if a card is drawn in reverse position (this will be true 30% of the time)
+     * if reversed, return true
+     * if not reversed, return false
+     */
     public boolean reverseTrueOrFalse() {
         Random rand = new Random();
         int min = 1, max = 10;
@@ -142,9 +144,10 @@ public class Tarot implements Callable<String> {
         return cardPos;
     }
 
-    // writeToFile() creates an HTML tag for each card in a spread to display its meaning, position, and image
-    // each HTML tag is included in a HTML table
-    // the HTML table is written to index.html to display as a web page
+    /* writeToFile() creates an HTML tag for each card in a spread to display its meaning, position, and image
+     * each HTML tag is included in a HTML table
+     * the HTML table is written to index.html to display as a web page
+     */
     public void writeToFile(Spread curSpread, String path, List<String> curNames) {
 
         // truncate exisiting contents of index.html to 0
