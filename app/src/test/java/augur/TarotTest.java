@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class TarotTest {
 
-    // getImgHTMLTag() tests
+    // getImgHTMLTag() tests should return correct HTML tag
     @Test
     public void test_getImgHTMLTag_upright() {
         Tarot test = new Tarot();

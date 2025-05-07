@@ -5,7 +5,8 @@ Augur is a command line interface that allows the user to divine their future us
 
 ### Features:
 * Users can choose between three traditional Tarot spreads (the one-card draw, the three-card draw, and the Celtic cross) for a reading suited to their individual sortilege needs.
-* A spread includes the image of each Tarot card, the significance of its position in the spread, and its meaning.
+* For users unfamiliar with Tarot, Augur will ask you some useful questions and choose a suitable Tarot spread to divine your future.
+* A spread includes the image of each Tarot card, the significance of its position in the spread, and its divinatory meaning.
 * As in a real Tarot reading, some cards will be drawn in reverse position with their meaning altered accordingly.
 * Users can request another reading as many times as necessary to divine their future.
 
