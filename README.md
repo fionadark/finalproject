@@ -14,7 +14,7 @@ Augur is a command line interface that allows the user to divine their future us
 ![alt text](app/src/main/resources/images/AugurScreenshot.png)
 
 ### Quick start:
-* Download Augur files. (`git clone https://github.com/fionadark/augur`)
+* Download Augur files. (`git clone https://github.com/fionadark/finalproject`)
 * `cd` into Augur source folder.
 * Execute `./gradlew run`.
 
